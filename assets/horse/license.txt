@@ -1,0 +1,11 @@
+Model Information:
+* title:	Running Horse
+* source:	https://sketchfab.com/3d-models/running-horse-7b17a5b479674c9b9311ed855bea645e
+* author:	hemankadariya29 (https://sketchfab.com/hemankadariya29)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Running Horse" (https://sketchfab.com/3d-models/running-horse-7b17a5b479674c9b9311ed855bea645e) by hemankadariya29 (https://sketchfab.com/hemankadariya29) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
