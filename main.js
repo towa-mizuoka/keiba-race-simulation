@@ -10,13 +10,29 @@ camera.position.set(-200, 10, 20);
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.0); // Adjust color and intensity as needed
 scene.add(ambientLight);
 
+const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.0);
+directionalLight1.position.set(5, 10, 5).normalize();
+scene.add(directionalLight1);
+
 // Renderer
 const canvas = document.getElementById('canvas');
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Load Horse Model
-const numHorses = 10;
+const horses = [
+  { id: 1, color: 'brown', modelPath: 'assets/brown_horse/scene.gltf' },
+  { id: 2, color: 'white', modelPath: 'assets/white_horse/scene.gltf' },
+  { id: 3, color: 'black', modelPath: 'assets/black_horse/scene.gltf' },
+  { id: 4, color: 'brown', modelPath: 'assets/brown_horse/scene.gltf' },
+  { id: 5, color: 'black', modelPath: 'assets/black_horse/scene.gltf' },
+  { id: 6, color: 'brown', modelPath: 'assets/brown_horse/scene.gltf' },
+  { id: 7, color: 'black', modelPath: 'assets/black_horse/scene.gltf' },
+  { id: 8, color: 'black', modelPath: 'assets/black_horse/scene.gltf' },
+  { id: 9, color: 'black', modelPath: 'assets/black_horse/scene.gltf' },
+  { id: 10, color: 'brown', modelPath: 'assets/brown_horse/scene.gltf' },
+];
+const numHorses = horses.length;
 const trackWidth = 25;
 const horseSpacing = trackWidth / (numHorses + 1);
 let horseModels = [];
@@ -31,7 +47,7 @@ let trackEnd = new THREE.Vector3(200, 0, 0);  // Default end point
 
 // Function to generate random speed and add noise
 function generateRandomSpeed() {
-  return Math.random() * 1 + 15; // Random speed between 8 and 13
+  return Math.random() * 1 + 12; // Random speed between 8 and 13
 }
 
 for (let i = 0; i < numHorses; i++) {
@@ -39,34 +55,35 @@ for (let i = 0; i < numHorses; i++) {
 }
 
 const horseLoader = new GLTFLoader();
-horseLoader.load('assets/horse/scene.gltf', (gltf) => {
-  for (let i = 0; i < numHorses; i++) {
+
+horses.forEach((horse, i) => {
+  horseLoader.load(horse.modelPath, (gltf) => {
     let horseModel = gltf.scene.clone();
     let xOffset = (i + 1) * horseSpacing - trackWidth / 2;
     horseModel.position.copy(trackStart).add(new THREE.Vector3(0, 0, xOffset)); // Spread out horses along z-axis
-    horseModel.rotation.y = Math.PI / 2;
+    horseModel.rotation.y = Math.PI;
     horseModel.scale.set(0.6, 0.6, 0.6);
     scene.add(horseModel);
 
-    // Animation Mixer and Action
+    // アニメーションの設定
     if (gltf.animations && gltf.animations.length > 0) {
       let animationMixer = new THREE.AnimationMixer(horseModel);
       animationMixer.timeScale = 3.0;
       let animationAction = animationMixer.clipAction(gltf.animations[0]);
       animationAction.play();
-      animationAction.paused = true; // Pause the animation initially
+      animationAction.paused = true; // 初期状態でアニメーションを停止
 
       animationMixers.push(animationMixer);
       animationActions.push(animationAction);
     }
 
     horseModels.push(horseModel);
-  }
+  });
 });
 
 // 外部トラックモデルの読み込み
 const trackLoader = new GLTFLoader();
-trackLoader.load('assets/course/race-course.gltf', (gltf) => {
+trackLoader.load('assets/course/scene.gltf', (gltf) => {
   const trackModel = gltf.scene;
   scene.add(trackModel);
 });
@@ -96,6 +113,7 @@ document.addEventListener('keydown', (event) => {
 // Game Loop
 function animate() {
   requestAnimationFrame(animate);
+  controls.target.copy(trackStart);
   // Update horse positions based on race logic
   if (startRace && !pauseRace) {
     const delta = clock.getDelta();
@@ -114,8 +132,7 @@ function animate() {
           // Move the horse along the direction vector
           horseModels[i].position.add(direction.multiplyScalar(speedWithNoise * delta));
 
-          console.log(i, horseModels[i].position.add(direction.multiplyScalar(speedWithNoise * delta)));
-          horseModels[i].rotation.y = - Math.PI / 2;
+          horseModels[i].rotation.y = Math.PI;
 
           // Check if the horse has reached the end of the track
           if (horseModels[i].position.x >= trackEnd.x) {
